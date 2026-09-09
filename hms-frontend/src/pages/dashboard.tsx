@@ -1,5 +1,7 @@
-import { useAppointments } from './hooks';
-import { Loading } from './components';
+// Dashboard page
+
+import { useAppointments } from '../hooks';
+import { Card, Loading } from '../components/primitives';
 import { Calendar, CheckCircle, Clock, Stethoscope } from '@phosphor-icons/react';
 
 interface Props {
@@ -59,10 +61,7 @@ export function Dashboard({ }: Props) {
       {/* Stats cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="bg-bg-surface rounded-xl border border-border-standard p-4 hover:border-border-strong transition-colors"
-          >
+          <Card key={stat.label} hover className="p-4">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${stat.bg}`}>
                 <stat.icon className={`w-5 h-5 ${stat.color}`} weight="bold" />
@@ -72,12 +71,12 @@ export function Dashboard({ }: Props) {
                 <p className="text-2xl font-semibold text-text-primary">{stat.value}</p>
               </div>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* Appointment progress */}
-      <div className="bg-bg-surface rounded-xl border border-border-standard p-6">
+      <Card className="p-6">
         <h3 className="text-base font-semibold text-text-primary mb-4">Appointment Progress</h3>
         <div className="flex items-center gap-6">
           <div className="flex-1">
@@ -113,7 +112,7 @@ export function Dashboard({ }: Props) {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

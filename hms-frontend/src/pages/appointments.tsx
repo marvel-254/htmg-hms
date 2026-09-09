@@ -1,6 +1,8 @@
+// Appointment management page
+
 import { useState } from 'react';
-import { useAppointments, usePatients, useDoctors } from './hooks';
-import { Modal, Loading, ErrorDisplay, StatusBadge } from './components';
+import { useAppointments, usePatients, useDoctors } from '../hooks';
+import { Button, Modal, Loading, ErrorDisplay, EmptyState, Badge, confirm } from '../components/primitives';
 import { Calendar, Plus, Trash, Warning } from '@phosphor-icons/react';
 
 interface Props {
@@ -8,7 +10,7 @@ interface Props {
 }
 
 export function AppointmentList({ onRefresh }: Props) {
-  const { appointments, loading, error, fetchAppointments, createAppointment, updateStatus, deleteAppointment } = useAppointments();
+  const { appointments, loading, error, fetchAll, create, updateStatus, remove } = useAppointments();
   const { patients } = usePatients();
   const { doctors } = useDoctors();
 
@@ -28,7 +30,7 @@ export function AppointmentList({ onRefresh }: Props) {
     setErrorMsg('');
     setConflict(false);
     try {
-      await createAppointment({
+      await create({
         patient_id: form.patient_id,
         doctor_id: form.doctor_id,
         appt_date: form.appt_date,
@@ -61,7 +63,7 @@ export function AppointmentList({ onRefresh }: Props) {
   const handleDelete = async (id: string) => {
     if (confirm('Delete this appointment?')) {
       try {
-        await deleteAppointment(id);
+        await remove(id);
         onRefresh();
       } catch (e: any) {
         setErrorMsg(e.message || 'Delete failed');
@@ -87,17 +89,14 @@ export function AppointmentList({ onRefresh }: Props) {
           <h2 className="text-xl font-semibold text-text-primary">Appointment Management</h2>
           <p className="text-sm text-text-muted">Book and manage appointments</p>
         </div>
-        <button
-          onClick={() => setShowAdd(true)}
-          className="btn-primary flex items-center gap-2"
-        >
+        <Button onClick={() => setShowAdd(true)}>
           <Plus className="w-4 h-4" weight="bold" />
           Book Appointment
-        </button>
+        </Button>
       </div>
 
       {loading && <Loading />}
-      {error && <ErrorDisplay message={error} onRetry={fetchAppointments} />}
+      {error && <ErrorDisplay message={error} onRetry={fetchAll} />}
       {errorMsg && <ErrorDisplay message={errorMsg} />}
       {conflict && (
         <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 flex items-center gap-3">
@@ -107,16 +106,12 @@ export function AppointmentList({ onRefresh }: Props) {
       )}
 
       {!loading && appointments.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-            <Calendar className="w-8 h-8 text-text-muted" />
-          </div>
-          <p className="text-text-secondary font-medium">No appointments yet</p>
-          <p className="text-sm text-text-muted mt-1">Book your first appointment to get started</p>
-          <button onClick={() => setShowAdd(true)} className="btn-primary mt-4">
-            Book Appointment
-          </button>
-        </div>
+        <EmptyState
+          icon={<Calendar className="w-8 h-8" />}
+          title="No appointments yet"
+          description="Book your first appointment to get started"
+          action={{ label: 'Book Appointment', onClick: () => setShowAdd(true) }}
+        />
       )}
 
       {!loading && appointments.length > 0 && (
@@ -143,22 +138,18 @@ export function AppointmentList({ onRefresh }: Props) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <StatusBadge status={apt.status} />
+                  <Badge variant={apt.status === 'completed' ? 'success' : apt.status === 'confirmed' ? 'info' : 'warning'}>
+                    {apt.status === 'pending' ? 'Pending' : apt.status === 'confirmed' ? 'Confirmed' : 'Completed'}
+                  </Badge>
                   {apt.status === 'pending' && (
-                    <button
-                      onClick={() => handleStatusChange(apt.id, 'confirmed')}
-                      className="px-3 py-1 bg-brand text-white text-sm rounded-lg hover:bg-brand-hover transition-colors"
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => handleStatusChange(apt.id, 'confirmed')}>
                       Confirm
-                    </button>
+                    </Button>
                   )}
                   {apt.status === 'confirmed' && (
-                    <button
-                      onClick={() => handleStatusChange(apt.id, 'completed')}
-                      className="px-3 py-1 bg-success-alt text-white text-sm rounded-lg hover:bg-success transition-colors"
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => handleStatusChange(apt.id, 'completed')}>
                       Complete
-                    </button>
+                    </Button>
                   )}
                   <button
                     onClick={() => handleDelete(apt.id)}
@@ -269,18 +260,12 @@ export function AppointmentList({ onRefresh }: Props) {
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button
-              onClick={() => { setShowAdd(false); setConflict(false); setErrorMsg(''); }}
-              className="btn-ghost flex-1"
-            >
+            <Button variant="ghost" className="flex-1" onClick={() => { setShowAdd(false); setConflict(false); setErrorMsg(''); }}>
               Cancel
-            </button>
-            <button
-              onClick={handleAdd}
-              className="btn-primary flex-1"
-            >
+            </Button>
+            <Button className="flex-1" onClick={handleAdd}>
               Book
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>

@@ -1,6 +1,8 @@
+// Doctor management page
+
 import { useState } from 'react';
-import { useDoctors } from './hooks';
-import { Modal, Loading, ErrorDisplay } from './components';
+import { useDoctors } from '../hooks';
+import { Button, Input, Modal, Card, Loading, ErrorDisplay, EmptyState, confirm } from '../components/primitives';
 import { Stethoscope, Plus, Trash, MagnifyingGlass, CalendarBlank } from '@phosphor-icons/react';
 
 interface Props {
@@ -8,7 +10,7 @@ interface Props {
 }
 
 export function DoctorList({ onRefresh }: Props) {
-  const { doctors, loading, error, fetchDoctors, createDoctor, deleteDoctor } = useDoctors();
+  const { doctors, loading, error, fetchAll, create, remove } = useDoctors();
   const [showAdd, setShowAdd] = useState(false);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ name: '', specialization: '', contact: '', schedule: '' });
@@ -17,7 +19,7 @@ export function DoctorList({ onRefresh }: Props) {
   const handleAdd = async () => {
     setErrorMsg('');
     try {
-      await createDoctor({
+      await create({
         name: form.name,
         specialization: form.specialization,
         contact: form.contact || undefined,
@@ -34,7 +36,7 @@ export function DoctorList({ onRefresh }: Props) {
   const handleDelete = async (id: string) => {
     if (confirm('Delete this doctor?')) {
       try {
-        await deleteDoctor(id);
+        await remove(id);
         onRefresh();
       } catch (e: any) {
         setErrorMsg(e.message || 'Delete failed');
@@ -55,13 +57,10 @@ export function DoctorList({ onRefresh }: Props) {
           <h2 className="text-xl font-semibold text-text-primary">Doctor Management</h2>
           <p className="text-sm text-text-muted">Register and manage doctors by specialty</p>
         </div>
-        <button
-          onClick={() => setShowAdd(true)}
-          className="btn-primary flex items-center gap-2"
-        >
+        <Button onClick={() => setShowAdd(true)}>
           <Plus className="w-4 h-4" weight="bold" />
           Add Doctor
-        </button>
+        </Button>
       </div>
 
       <div className="relative">
@@ -76,29 +75,22 @@ export function DoctorList({ onRefresh }: Props) {
       </div>
 
       {loading && <Loading />}
-      {error && <ErrorDisplay message={error} onRetry={fetchDoctors} />}
+      {error && <ErrorDisplay message={error} onRetry={fetchAll} />}
       {errorMsg && <ErrorDisplay message={errorMsg} />}
 
       {!loading && !error && doctors.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-            <Stethoscope className="w-8 h-8 text-text-muted" />
-          </div>
-          <p className="text-text-secondary font-medium">No doctors registered yet</p>
-          <p className="text-sm text-text-muted mt-1">Add your first doctor to get started</p>
-          <button onClick={() => setShowAdd(true)} className="btn-primary mt-4">
-            Add Doctor
-          </button>
-        </div>
+        <EmptyState
+          icon={<Stethoscope className="w-8 h-8" />}
+          title="No doctors registered yet"
+          description="Add your first doctor to get started"
+          action={{ label: 'Add Doctor', onClick: () => setShowAdd(true) }}
+        />
       )}
 
       {!loading && doctors.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {filtered.map((doctor) => (
-            <div
-              key={doctor.id}
-              className="bg-bg-surface rounded-xl border border-border-standard p-4 hover:border-border-strong transition-colors"
-            >
+            <Card key={doctor.id} hover className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center">
@@ -123,66 +115,44 @@ export function DoctorList({ onRefresh }: Props) {
                   <p className="text-sm text-text-muted">{doctor.schedule}</p>
                 </div>
               )}
-            </div>
+            </Card>
           ))}
         </div>
       )}
 
       <Modal isOpen={showAdd} onClose={() => setShowAdd(false)} title="Register Doctor">
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1.5">Name *</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full px-4 py-2.5"
-              placeholder="Doctor name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1.5">Specialty *</label>
-            <input
-              type="text"
-              value={form.specialization}
-              onChange={(e) => setForm({ ...form, specialization: e.target.value })}
-              className="w-full px-4 py-2.5"
-              placeholder="e.g. Internal Medicine, Surgery..."
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1.5">Phone</label>
-            <input
-              type="text"
-              value={form.contact}
-              onChange={(e) => setForm({ ...form, contact: e.target.value })}
-              className="w-full px-4 py-2.5"
-              placeholder="+1 234 567 8900"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1.5">Schedule</label>
-            <input
-              type="text"
-              value={form.schedule}
-              onChange={(e) => setForm({ ...form, schedule: e.target.value })}
-              className="w-full px-4 py-2.5"
-              placeholder="e.g. Mon-Fri 9:00 AM - 6:00 PM"
-            />
-          </div>
+          <Input
+            label="Name *"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="Doctor name"
+          />
+          <Input
+            label="Specialty *"
+            value={form.specialization}
+            onChange={(e) => setForm({ ...form, specialization: e.target.value })}
+            placeholder="e.g. Internal Medicine, Surgery..."
+          />
+          <Input
+            label="Phone"
+            value={form.contact}
+            onChange={(e) => setForm({ ...form, contact: e.target.value })}
+            placeholder="+1 234 567 8900"
+          />
+          <Input
+            label="Schedule"
+            value={form.schedule}
+            onChange={(e) => setForm({ ...form, schedule: e.target.value })}
+            placeholder="e.g. Mon-Fri 9:00 AM - 6:00 PM"
+          />
           <div className="flex gap-3 pt-2">
-            <button
-              onClick={() => setShowAdd(false)}
-              className="btn-ghost flex-1"
-            >
+            <Button variant="ghost" className="flex-1" onClick={() => setShowAdd(false)}>
               Cancel
-            </button>
-            <button
-              onClick={handleAdd}
-              className="btn-primary flex-1"
-            >
+            </Button>
+            <Button className="flex-1" onClick={handleAdd}>
               Register
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>
