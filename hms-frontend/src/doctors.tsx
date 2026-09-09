@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDoctors } from './hooks';
 import { Modal, Loading, ErrorDisplay } from './components';
+import { Stethoscope, Plus, Trash, MagnifyingGlass, CalendarBlank } from '@phosphor-icons/react';
 
 interface Props {
   onRefresh: () => void;
@@ -51,31 +52,27 @@ export function DoctorList({ onRefresh }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Doctor Management</h2>
-          <p className="text-sm text-gray-500">Register and manage doctors by specialty</p>
+          <h2 className="text-xl font-semibold text-text-primary">Doctor Management</h2>
+          <p className="text-sm text-text-muted">Register and manage doctors by specialty</p>
         </div>
         <button
           onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition font-medium"
+          className="btn-primary flex items-center gap-2"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          <Plus className="w-4 h-4" weight="bold" />
           Add Doctor
         </button>
       </div>
 
       <div className="relative">
+        <MagnifyingGlass className="absolute left-3 top-2.5 w-4 h-4 text-text-muted" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or specialty..."
-          className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+          className="w-full pl-10 pr-4 py-2.5"
         />
-        <svg className="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
       </div>
 
       {loading && <Loading />}
@@ -83,13 +80,14 @@ export function DoctorList({ onRefresh }: Props) {
       {errorMsg && <ErrorDisplay message={errorMsg} />}
 
       {!loading && !error && doctors.length === 0 && (
-        <div className="text-center py-12">
-          <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h-5.051" />
-          </svg>
-          <p className="text-gray-500">No doctors registered yet</p>
-          <button onClick={() => setShowAdd(true)} className="mt-3 text-primary text-sm underline">
-            Add your first doctor
+        <div className="text-center py-16">
+          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+            <Stethoscope className="w-8 h-8 text-text-muted" />
+          </div>
+          <p className="text-text-secondary font-medium">No doctors registered yet</p>
+          <p className="text-sm text-text-muted mt-1">Add your first doctor to get started</p>
+          <button onClick={() => setShowAdd(true)} className="btn-primary mt-4">
+            Add Doctor
           </button>
         </div>
       )}
@@ -99,34 +97,30 @@ export function DoctorList({ onRefresh }: Props) {
           {filtered.map((doctor) => (
             <div
               key={doctor.id}
-              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition"
+              className="bg-bg-surface rounded-xl border border-border-standard p-4 hover:border-border-strong transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                  <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center">
+                    <Stethoscope className="w-5 h-5 text-brand-accent" weight="bold" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{doctor.name}</p>
-                    <p className="text-sm text-blue-600">{doctor.specialization}</p>
+                    <p className="font-medium text-text-primary">{doctor.name}</p>
+                    <p className="text-sm text-brand-accent">{doctor.specialization}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => handleDelete(doctor.id)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                  className="p-2 text-text-muted hover:text-error hover:bg-error/10 rounded-lg transition-colors"
                   title="Delete"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <Trash className="w-4 h-4" />
                 </button>
               </div>
               {doctor.schedule && (
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-400 uppercase tracking-wide">Schedule</p>
-                  <p className="text-sm text-gray-600 mt-1">{doctor.schedule}</p>
+                <div className="mt-3 pt-3 border-t border-border-subtle flex items-center gap-2">
+                  <CalendarBlank className="w-3.5 h-3.5 text-text-muted" />
+                  <p className="text-sm text-text-muted">{doctor.schedule}</p>
                 </div>
               )}
             </div>
@@ -137,55 +131,55 @@ export function DoctorList({ onRefresh }: Props) {
       <Modal isOpen={showAdd} onClose={() => setShowAdd(false)} title="Register Doctor">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">Name *</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+              className="w-full px-4 py-2.5"
               placeholder="Doctor name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Specialty *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">Specialty *</label>
             <input
               type="text"
               value={form.specialization}
               onChange={(e) => setForm({ ...form, specialization: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-              placeholder="e.g. Internal Medicine, Surgery, Pediatrics..."
+              className="w-full px-4 py-2.5"
+              placeholder="e.g. Internal Medicine, Surgery..."
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">Phone</label>
             <input
               type="text"
               value={form.contact}
               onChange={(e) => setForm({ ...form, contact: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+              className="w-full px-4 py-2.5"
               placeholder="+1 234 567 8900"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Schedule</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">Schedule</label>
             <input
               type="text"
               value={form.schedule}
               onChange={(e) => setForm({ ...form, schedule: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+              className="w-full px-4 py-2.5"
               placeholder="e.g. Mon-Fri 9:00 AM - 6:00 PM"
             />
           </div>
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setShowAdd(false)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+              className="btn-ghost flex-1"
             >
               Cancel
             </button>
             <button
               onClick={handleAdd}
-              className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium"
+              className="btn-primary flex-1"
             >
               Register
             </button>

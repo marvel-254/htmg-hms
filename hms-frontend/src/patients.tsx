@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePatients } from './hooks';
 import { Modal, Loading, ErrorDisplay } from './components';
+import { User, Plus, Trash, MagnifyingGlass, MapPin, Phone } from '@phosphor-icons/react';
 
 interface Props {
   onRefresh: () => void;
@@ -53,31 +54,27 @@ export function PatientList({ onRefresh }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Patient Management</h2>
-          <p className="text-sm text-gray-500">Register and manage patients</p>
+          <h2 className="text-xl font-semibold text-text-primary">Patient Management</h2>
+          <p className="text-sm text-text-muted">Register and manage patients</p>
         </div>
         <button
           onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition font-medium"
+          className="btn-primary flex items-center gap-2"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          <Plus className="w-4 h-4" weight="bold" />
           Add Patient
         </button>
       </div>
 
       <div className="relative">
+        <MagnifyingGlass className="absolute left-3 top-2.5 w-4 h-4 text-text-muted" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or phone..."
-          className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+          className="w-full pl-10 pr-4 py-2.5"
         />
-        <svg className="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
       </div>
 
       {loading && <Loading />}
@@ -85,13 +82,14 @@ export function PatientList({ onRefresh }: Props) {
       {errorMsg && <ErrorDisplay message={errorMsg} />}
 
       {!loading && !error && patients.length === 0 && (
-        <div className="text-center py-12">
-          <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <p className="text-gray-500">No patients registered yet</p>
-          <button onClick={() => setShowAdd(true)} className="mt-3 text-primary text-sm underline">
-            Register your first patient
+        <div className="text-center py-16">
+          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+            <User className="w-8 h-8 text-text-muted" />
+          </div>
+          <p className="text-text-secondary font-medium">No patients registered yet</p>
+          <p className="text-sm text-text-muted mt-1">Register your first patient to get started</p>
+          <button onClick={() => setShowAdd(true)} className="btn-primary mt-4">
+            Register Patient
           </button>
         </div>
       )}
@@ -101,34 +99,39 @@ export function PatientList({ onRefresh }: Props) {
           {filtered.map((patient) => (
             <div
               key={patient.id}
-              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition flex items-center justify-between"
+              className="bg-bg-surface rounded-xl border border-border-standard p-4 hover:border-border-strong transition-colors flex items-center justify-between"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center">
+                  <User className="w-5 h-5 text-brand-accent" weight="bold" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{patient.name}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-medium text-text-primary">{patient.name}</p>
+                  <p className="text-sm text-text-muted">
                     {patient.age}yrs / {patient.gender === 'male' ? 'Male' : patient.gender === 'female' ? 'Female' : 'Other'}
                     {patient.condition ? ` / ${patient.condition}` : ''}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4">
                 {patient.contact && (
-                  <span className="text-sm text-gray-400">{patient.contact}</span>
+                  <div className="flex items-center gap-1.5 text-sm text-text-muted">
+                    <Phone className="w-3.5 h-3.5" />
+                    {patient.contact}
+                  </div>
+                )}
+                {patient.address && (
+                  <div className="flex items-center gap-1.5 text-sm text-text-muted">
+                    <MapPin className="w-3.5 h-3.5" />
+                    {patient.address}
+                  </div>
                 )}
                 <button
                   onClick={() => handleDelete(patient.id)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                  className="p-2 text-text-muted hover:text-error hover:bg-error/10 rounded-lg transition-colors"
                   title="Delete"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <Trash className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -139,34 +142,34 @@ export function PatientList({ onRefresh }: Props) {
       <Modal isOpen={showAdd} onClose={() => setShowAdd(false)} title="Register Patient">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">Name *</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+              className="w-full px-4 py-2.5"
               placeholder="Patient name"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Age *</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">Age *</label>
               <input
                 type="number"
                 value={form.age}
                 onChange={(e) => setForm({ ...form, age: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                className="w-full px-4 py-2.5"
                 placeholder="Age"
                 min={0}
                 max={150}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">Gender *</label>
               <select
                 value={form.gender}
                 onChange={(e) => setForm({ ...form, gender: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white"
+                className="w-full px-4 py-2.5"
               >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -175,45 +178,45 @@ export function PatientList({ onRefresh }: Props) {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">Phone</label>
             <input
               type="text"
               value={form.contact}
               onChange={(e) => setForm({ ...form, contact: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+              className="w-full px-4 py-2.5"
               placeholder="+1 234 567 8900"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">Address</label>
             <input
               type="text"
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+              className="w-full px-4 py-2.5"
               placeholder="Address"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Condition</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">Condition</label>
             <input
               type="text"
               value={form.condition}
               onChange={(e) => setForm({ ...form, condition: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+              className="w-full px-4 py-2.5"
               placeholder="e.g. Cold, Hypertension..."
             />
           </div>
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setShowAdd(false)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+              className="btn-ghost flex-1"
             >
               Cancel
             </button>
             <button
               onClick={handleAdd}
-              className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium"
+              className="btn-primary flex-1"
             >
               Register
             </button>
