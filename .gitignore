@@ -13,7 +13,7 @@ hms-backend/dist/
 # Logs
 logs/
 *.log
-npm-debug.log*
+npm-debug-log*
 
 # OS / Editor
 .DS_Store
@@ -24,4 +24,10 @@ npm-debug.log*
 # SQLite artifacts (legacy)
 *.db
 *.sqlite
+
+# Agent/IDE local
 .claude/
+.ori/
+
+# OS
+Thumbs.db
