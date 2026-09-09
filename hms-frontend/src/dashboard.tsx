@@ -20,11 +20,11 @@ export function Dashboard({  }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-gray-900">대시보드</h2>
-        <p className="text-sm text-gray-500">병원 운영 현황 요약</p>
+        <h2 className="text-xl font-bold text-gray-900">Dashboard</h2>
+        <p className="text-sm text-gray-500">Hospital operations summary</p>
       </div>
 
-      {/* 통계 카드 */}
+      {/* Stats cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white border border-gray-200 rounded-xl p-4">
           <div className="flex items-center gap-3">
@@ -34,7 +34,7 @@ export function Dashboard({  }: Props) {
               </svg>
             </div>
             <div>
-              <p className="text-sm text-gray-500">오늘 예약</p>
+              <p className="text-sm text-gray-500">Today's Appointments</p>
               <p className="text-2xl font-bold text-gray-900">{todayAppointments}</p>
             </div>
           </div>
@@ -48,7 +48,7 @@ export function Dashboard({  }: Props) {
               </svg>
             </div>
             <div>
-              <p className="text-sm text-gray-500">완료</p>
+              <p className="text-sm text-gray-500">Completed</p>
               <p className="text-2xl font-bold text-gray-900">{completedAppointments}</p>
             </div>
           </div>
@@ -62,7 +62,7 @@ export function Dashboard({  }: Props) {
               </svg>
             </div>
             <div>
-              <p className="text-sm text-gray-500">대기</p>
+              <p className="text-sm text-gray-500">Pending</p>
               <p className="text-2xl font-bold text-gray-900">{pendingAppointments}</p>
             </div>
           </div>
@@ -76,21 +76,21 @@ export function Dashboard({  }: Props) {
               </svg>
             </div>
             <div>
-              <p className="text-sm text-gray-500">전체 예약</p>
+              <p className="text-sm text-gray-500">Total Appointments</p>
               <p className="text-2xl font-bold text-gray-900">{appointments.length}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 예약 진행 상태 */}
+      {/* Appointment progress */}
       <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">예약 진행 상태</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Appointment Progress</h3>
         <div className="flex items-center gap-4">
           <div className="flex-1">
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-600">확정</span>
-              <span className="font-medium text-gray-900">{appointments.filter((a) => a.status === 'confirmed').length}건</span>
+              <span className="text-gray-600">Confirmed</span>
+              <span className="font-medium text-gray-900">{appointments.filter((a) => a.status === 'confirmed').length}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div
@@ -105,8 +105,8 @@ export function Dashboard({  }: Props) {
           </div>
           <div className="flex-1">
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-600">대기</span>
-              <span className="font-medium text-gray-900">{pendingAppointments}건</span>
+              <span className="text-gray-600">Pending</span>
+              <span className="font-medium text-gray-900">{pendingAppointments}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div

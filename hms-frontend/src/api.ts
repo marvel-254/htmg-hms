@@ -1,4 +1,4 @@
-// HMS API 클라이언트
+// HMS API Client
 const API_BASE = '/api';
 
 interface ApiResponse<T> {
@@ -13,12 +13,12 @@ async function request<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token = localStorage.getItem('htmg_token');
-  
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...options.headers,
   };
-  
+
   if (token) {
     (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
   }
@@ -38,7 +38,7 @@ async function request<T>(
 }
 
 export const api = {
-  // 인증
+  // Auth
   register: (body: { email: string; password: string; name: string; role: string }) =>
     request<{ message: string; user: User; token: string }>('/auth/register', {
       method: 'POST',
@@ -60,7 +60,7 @@ export const api = {
       body: JSON.stringify({ role }),
     }),
 
-  // 환자
+  // Patients
   getPatients: () => request<{ patients: Patient[] }>('/patients'),
   searchPatients: (q: string) =>
     request<{ patients: Patient[] }>(`/patients/search?q=${encodeURIComponent(q)}`),
@@ -78,7 +78,7 @@ export const api = {
   deletePatient: (id: string) =>
     request<{ message: string }>(`/patients/${id}`, { method: 'DELETE' }),
 
-  // 의사
+  // Doctors
   getDoctors: () => request<{ doctors: Doctor[] }>('/doctors'),
   searchDoctors: (q: string) =>
     request<{ doctors: Doctor[] }>(`/doctors/search?q=${encodeURIComponent(q)}`),
@@ -96,7 +96,7 @@ export const api = {
   deleteDoctor: (id: string) =>
     request<{ message: string }>(`/doctors/${id}`, { method: 'DELETE' }),
 
-  // 예약
+  // Appointments
   getAppointments: () => request<{ appointments: Appointment[] }>('/appointments'),
   getAppointment: (id: string) =>
     request<{ appointment: Appointment }>(`/appointments/${id}`),
@@ -113,14 +113,14 @@ export const api = {
   deleteAppointment: (id: string) =>
     request<{ message: string }>(`/appointments/${id}`, { method: 'DELETE' }),
 
-  // 대시보드
+  // Dashboard
   getStats: () => request<{ stats: Stats }>('/dashboard/stats'),
   getRecentActivity: () =>
     request<{ recentPatients: Patient[]; recentAppointments: Appointment[] }>(
       '/dashboard/recent-activity'
     ),
 
-  // 헬스체크
+  // Health check
   health: () => request<{ status: string; timestamp: string }>('/health'),
 };
 

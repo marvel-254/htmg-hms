@@ -28,17 +28,17 @@ export function PatientList({ onRefresh }: Props) {
       setForm({ name: '', age: '', gender: 'male', contact: '', address: '', condition: '' });
       onRefresh();
     } catch (e: any) {
-      setErrorMsg(e.message || '등록 실패');
+      setErrorMsg(e.message || 'Registration failed');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('이 환자를 삭제하시겠습니까?')) {
+    if (confirm('Delete this patient?')) {
       try {
         await deletePatient(id);
         onRefresh();
       } catch (e: any) {
-        setErrorMsg(e.message || '삭제 실패');
+        setErrorMsg(e.message || 'Delete failed');
       }
     }
   };
@@ -53,8 +53,8 @@ export function PatientList({ onRefresh }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">환자 관리</h2>
-          <p className="text-sm text-gray-500">환자 등록 및 목록 관리</p>
+          <h2 className="text-xl font-bold text-gray-900">Patient Management</h2>
+          <p className="text-sm text-gray-500">Register and manage patients</p>
         </div>
         <button
           onClick={() => setShowAdd(true)}
@@ -63,7 +63,7 @@ export function PatientList({ onRefresh }: Props) {
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          환자 추가
+          Add Patient
         </button>
       </div>
 
@@ -72,7 +72,7 @@ export function PatientList({ onRefresh }: Props) {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="환자 이름 또는 연락처 검색..."
+          placeholder="Search by name or phone..."
           className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
         />
         <svg className="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,9 +89,9 @@ export function PatientList({ onRefresh }: Props) {
           <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
-          <p className="text-gray-500">등록된 환자가 없습니다</p>
+          <p className="text-gray-500">No patients registered yet</p>
           <button onClick={() => setShowAdd(true)} className="mt-3 text-primary text-sm underline">
-            첫 환자를 등록해보세요
+            Register your first patient
           </button>
         </div>
       )}
@@ -112,7 +112,7 @@ export function PatientList({ onRefresh }: Props) {
                 <div>
                   <p className="font-medium text-gray-900">{patient.name}</p>
                   <p className="text-sm text-gray-500">
-                    {patient.age}세 / {patient.gender === 'male' ? '남성' : patient.gender === 'female' ? '여성' : '기타'}
+                    {patient.age}yrs / {patient.gender === 'male' ? 'Male' : patient.gender === 'female' ? 'Female' : 'Other'}
                     {patient.condition ? ` / ${patient.condition}` : ''}
                   </p>
                 </div>
@@ -124,7 +124,7 @@ export function PatientList({ onRefresh }: Props) {
                 <button
                   onClick={() => handleDelete(patient.id)}
                   className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
-                  title="삭제"
+                  title="Delete"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -136,72 +136,72 @@ export function PatientList({ onRefresh }: Props) {
         </div>
       )}
 
-      <Modal isOpen={showAdd} onClose={() => setShowAdd(false)} title="환자 등록">
+      <Modal isOpen={showAdd} onClose={() => setShowAdd(false)} title="Register Patient">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">이름 *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-              placeholder="환자 이름"
+              placeholder="Patient name"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">나이 *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Age *</label>
               <input
                 type="number"
                 value={form.age}
                 onChange={(e) => setForm({ ...form, age: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                placeholder="나이"
+                placeholder="Age"
                 min={0}
                 max={150}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">성별 *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
               <select
                 value={form.gender}
                 onChange={(e) => setForm({ ...form, gender: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white"
               >
-                <option value="male">남성</option>
-                <option value="female">여성</option>
-                <option value="other">기타</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">연락처</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
             <input
               type="text"
               value={form.contact}
               onChange={(e) => setForm({ ...form, contact: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-              placeholder="010-1234-5678"
+              placeholder="+1 234 567 8900"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">주소</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
             <input
               type="text"
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-              placeholder="주소"
+              placeholder="Address"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">증상/상태</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Condition</label>
             <input
               type="text"
               value={form.condition}
               onChange={(e) => setForm({ ...form, condition: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-              placeholder="예:감기, 고혈압..."
+              placeholder="e.g. Cold, Hypertension..."
             />
           </div>
           <div className="flex gap-3 pt-2">
@@ -209,13 +209,13 @@ export function PatientList({ onRefresh }: Props) {
               onClick={() => setShowAdd(false)}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
             >
-              취소
+              Cancel
             </button>
             <button
               onClick={handleAdd}
               className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium"
             >
-              등록하기
+              Register
             </button>
           </div>
         </div>

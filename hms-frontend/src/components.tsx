@@ -1,4 +1,6 @@
-// 재사용 가능한 UI 컴포넌트
+// Reusable UI components
+import { useEffect } from 'react';
+import { X } from 'lucide-react';
 
 export function Loading() {
   return (
@@ -7,7 +9,7 @@ export function Loading() {
         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
-      <span className="ml-3 text-gray-500">로딩 중...</span>
+      <span className="ml-3 text-gray-500">Loading...</span>
     </div>
   );
 }
@@ -21,7 +23,7 @@ export function ErrorDisplay({ message, onRetry }: { message: string; onRetry?: 
           onClick={onRetry}
           className="mt-2 text-sm text-red-600 underline hover:text-red-800"
         >
-          다시 시도
+          Retry
         </button>
       )}
     </div>
@@ -110,6 +112,3 @@ export function Modal({ isOpen, onClose, title, children }: {
     </div>
   );
 }
-
-import { useEffect } from 'react';
-import { X } from 'lucide-react';

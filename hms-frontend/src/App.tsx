@@ -19,7 +19,7 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="mt-4 text-gray-500">로딩 중...</p>
+          <p className="mt-4 text-gray-500">Loading...</p>
         </div>
       </div>
     );
@@ -29,12 +29,12 @@ export default function App() {
     return <AuthPages />;
   }
 
-  // 역할별 메뉴 필터
+  // Role-based menu filter
   const filteredNav = [
-    { id: 'dashboard' as const, label: '대시보드', icon: DashboardIcon },
-    { id: 'patients' as const, label: '환자 관리', icon: UsersIcon },
-    { id: 'doctors' as const, label: '의사 관리', icon: StethoscopeIcon },
-    { id: 'appointments' as const, label: '예약 관리', icon: CalendarIcon },
+    { id: 'dashboard' as const, label: 'Dashboard', icon: DashboardIcon },
+    { id: 'patients' as const, label: 'Patients', icon: UsersIcon },
+    { id: 'doctors' as const, label: 'Doctors', icon: StethoscopeIcon },
+    { id: 'appointments' as const, label: 'Appointments', icon: CalendarIcon },
   ].filter((item) => {
     if (user.role === 'admin') return true;
     if (user.role === 'receptionist') return ['dashboard', 'patients', 'doctors', 'appointments'].includes(item.id);
@@ -44,7 +44,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* 사이드바 */}
+      {/* Sidebar */}
       <aside className="bg-white border-r border-gray-200 w-64 min-h-screen">
         <div className="p-6 border-b">
           <div className="flex items-center gap-3">
@@ -55,7 +55,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="font-bold text-gray-900">HMS</h1>
-              <p className="text-xs text-gray-500">병원 관리 시스템</p>
+              <p className="text-xs text-gray-500">Hospital Management System</p>
             </div>
           </div>
         </div>
@@ -92,7 +92,7 @@ export default function App() {
                 window.location.reload();
               }}
               className="text-gray-400 hover:text-red-500 transition p-1"
-              title="로그아웃"
+              title="Logout"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -102,7 +102,7 @@ export default function App() {
         </div>
       </aside>
 
-      {/* 메인 콘텐츠 */}
+      {/* Main content */}
       <main className="flex-1 p-8">
         <div className="max-w-5xl mx-auto">
           {view === 'dashboard' && <Dashboard onRefresh={refresh} />}
@@ -120,7 +120,7 @@ function AuthPages() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* 로고 배너 */}
+      {/* Logo banner */}
       <div className="bg-primary text-white py-4">
         <div className="max-w-5xl mx-auto px-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -134,7 +134,7 @@ function AuthPages() {
               <p className="text-xs text-white/70">Hospital Management System</p>
             </div>
           </div>
-          <p className="text-sm text-white/80">병원 운영 효율화를 위한 통합 관리 플랫폼</p>
+          <p className="text-sm text-white/80">Integrated management platform for hospital operations</p>
         </div>
       </div>
 
@@ -152,17 +152,17 @@ function AuthPages() {
         )}
       </div>
 
-      {/* 푸터 */}
+      {/* Footer */}
       <footer className="bg-white border-t py-4">
         <div className="max-w-5xl mx-auto px-8 text-center text-sm text-gray-400">
-          HMS Prototype · 데모용 버전 · 환자 데이터는 브라우저/서버에 임시 저장됩니다
+          HMS Prototype · Demo version · Patient data is stored temporarily in browser/server
         </div>
       </footer>
     </div>
   );
 }
 
-// 아이콘 컴포넌트
+// Icon components
 function DashboardIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">

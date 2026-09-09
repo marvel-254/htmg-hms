@@ -15,7 +15,7 @@ export function LoginPage({ onSwitchToRegister }: { onSwitchToRegister: () => vo
     try {
       await login(email, password);
     } catch (err: any) {
-      setError(err.message || '로그인 실패');
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -30,13 +30,12 @@ export function LoginPage({ onSwitchToRegister }: { onSwitchToRegister: () => vo
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">HMS 로그인</h1>
-          <p className="text-gray-500 mt-1">병원 관리 시스템에 접속하세요</p>
+          <h1 className="text-2xl font-bold text-gray-900">HMS Login</h1>
+          <p className="text-gray-500 mt-1">Sign in to Hospital Management System</p>
         </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
               value={email}
@@ -47,19 +46,17 @@ export function LoginPage({ onSwitchToRegister }: { onSwitchToRegister: () => vo
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-              placeholder="비밀번호 입력"
+              placeholder="Enter password"
               required
             />
           </div>
-
           {error && <p className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
-
           <button
             type="submit"
             disabled={loading}
@@ -70,14 +67,13 @@ export function LoginPage({ onSwitchToRegister }: { onSwitchToRegister: () => vo
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-            ) : '로그인'}
+            ) : 'Sign In'}
           </button>
         </form>
-
         <p className="text-center text-sm text-gray-500 mt-6">
-          계정이 없으신가요?{' '}
+          No account?{' '}
           <button onClick={onSwitchToRegister} className="text-primary font-medium hover:underline">
-            회원가입
+            Register
           </button>
         </p>
       </div>
@@ -98,7 +94,7 @@ export function RegisterPage({ onSwitchToLogin }: { onSwitchToLogin: () => void 
     try {
       await register(form.email, form.password, form.name, form.role);
     } catch (err: any) {
-      setError(err.message || '회원가입 실패');
+      setError(err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -113,24 +109,23 @@ export function RegisterPage({ onSwitchToLogin }: { onSwitchToLogin: () => void 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">HMS 회원가입</h1>
-          <p className="text-gray-500 mt-1">새 계정을 만드세요</p>
+          <h1 className="text-2xl font-bold text-gray-900">HMS Register</h1>
+          <p className="text-gray-500 mt-1">Create your account</p>
         </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-              placeholder="홍길동"
+              placeholder="John Doe"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
               value={form.email}
@@ -141,32 +136,30 @@ export function RegisterPage({ onSwitchToLogin }: { onSwitchToLogin: () => void 
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
               type="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-              placeholder="6자 이상"
+              placeholder="At least 6 characters"
               minLength={6}
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">역할</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
             <select
               value={form.role}
               onChange={(e) => setForm({ ...form, role: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition bg-white"
             >
-              <option value="receptionist">접수자 (Receptionist)</option>
-              <option value="doctor">의사 (Doctor)</option>
-              <option value="admin">관리자 (Admin)</option>
+              <option value="receptionist">Receptionist</option>
+              <option value="doctor">Doctor</option>
+              <option value="admin">Admin</option>
             </select>
           </div>
-
           {error && <p className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
-
           <button
             type="submit"
             disabled={loading}
@@ -177,14 +170,13 @@ export function RegisterPage({ onSwitchToLogin }: { onSwitchToLogin: () => void 
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-            ) : '회원가입'}
+            ) : 'Register'}
           </button>
         </form>
-
         <p className="text-center text-sm text-gray-500 mt-6">
-          이미 계정이 있으신가요?{' '}
+          Already have an account?{' '}
           <button onClick={onSwitchToLogin} className="text-primary font-medium hover:underline">
-            로그인
+            Sign In
           </button>
         </p>
       </div>

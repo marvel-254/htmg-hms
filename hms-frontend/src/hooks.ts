@@ -19,14 +19,14 @@ export function useAuth() {
     })
       .then((r) => {
         if (r.ok) return r.json();
-        throw new Error('인증 만료');
+        throw new Error('Session expired');
       })
       .then((data: { user: User }) => {
         setUser(data.user);
       })
       .catch(() => {
         localStorage.removeItem(STORAGE_KEY);
-        setError('세션이 만료되었습니다. 다시 로그인하세요.');
+        setError('Your session has expired. Please log in again.');
       })
       .finally(() => setLoading(false));
   }, []);
@@ -39,7 +39,7 @@ export function useAuth() {
       body: JSON.stringify({ email, password }),
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || '로그인 실패');
+    if (!r.ok) throw new Error(data.error || 'Login failed');
     localStorage.setItem(STORAGE_KEY, data.token);
     setUser(data.user);
     return data.user;
@@ -53,7 +53,7 @@ export function useAuth() {
       body: JSON.stringify({ email, password, name, role }),
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || '회원가입 실패');
+    if (!r.ok) throw new Error(data.error || 'Registration failed');
     localStorage.setItem(STORAGE_KEY, data.token);
     setUser(data.user);
     return data.user;
@@ -93,7 +93,7 @@ export function usePatients() {
       const data = await r.json();
       setPatients(data.patients || []);
     } catch (e: any) {
-      setError(e.message || '환자 목록 로드 실패');
+      setError(e.message || 'Failed to load patient list');
     } finally {
       setLoading(false);
     }
@@ -109,7 +109,7 @@ export function usePatients() {
       body: JSON.stringify(patient),
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || '환자 등록 실패');
+    if (!r.ok) throw new Error(data.error || 'Patient registration failed');
     await fetchPatients();
     return data.patient;
   };
@@ -124,7 +124,7 @@ export function usePatients() {
       body: JSON.stringify(patient),
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || '수정 실패');
+    if (!r.ok) throw new Error(data.error || 'Update failed');
     await fetchPatients();
     return data.patient;
   };
@@ -155,7 +155,7 @@ export function useDoctors() {
       const data = await r.json();
       setDoctors(data.doctors || []);
     } catch (e: any) {
-      setError(e.message || '의사 목록 로드 실패');
+      setError(e.message || 'Failed to load doctor list');
     } finally {
       setLoading(false);
     }
@@ -171,7 +171,7 @@ export function useDoctors() {
       body: JSON.stringify(doctor),
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || '의사 등록 실패');
+    if (!r.ok) throw new Error(data.error || 'Doctor registration failed');
     await fetchDoctors();
     return data.doctor;
   };
@@ -186,7 +186,7 @@ export function useDoctors() {
       body: JSON.stringify(doctor),
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || '수정 실패');
+    if (!r.ok) throw new Error(data.error || 'Update failed');
     await fetchDoctors();
     return data.doctor;
   };
@@ -217,7 +217,7 @@ export function useAppointments() {
       const data = await r.json();
       setAppointments(data.appointments || []);
     } catch (e: any) {
-      setError(e.message || '예약 목록 로드 실패');
+      setError(e.message || 'Failed to load appointment list');
     } finally {
       setLoading(false);
     }
@@ -238,7 +238,7 @@ export function useAppointments() {
       body: JSON.stringify(appointment),
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || '예약 실패');
+    if (!r.ok) throw new Error(data.error || 'Booking failed');
     await fetchAppointments();
     return data.appointment;
   };
@@ -253,7 +253,7 @@ export function useAppointments() {
       body: JSON.stringify({ status }),
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || '상태 변경 실패');
+    if (!r.ok) throw new Error(data.error || 'Status update failed');
     await fetchAppointments();
     return data.appointment;
   };

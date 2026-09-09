@@ -18,10 +18,7 @@ export function AppointmentList({ onRefresh }: Props) {
   const [errorMsg, setErrorMsg] = useState('');
   const [conflict, setConflict] = useState(false);
 
-  // 검색어에 따른 필터링된 목록
-  const filteredPatients = patients.filter(
-    (p) => p.name.toLowerCase().includes(patientSearch.toLowerCase())
-  );
+  const filteredPatients = patients.filter((p) => p.name.toLowerCase().includes(patientSearch.toLowerCase()));
   const filteredDoctors = doctors.filter(
     (d) => d.name.toLowerCase().includes(doctorSearch.toLowerCase()) || d.specialization.toLowerCase().includes(doctorSearch.toLowerCase())
   );
@@ -41,13 +38,12 @@ export function AppointmentList({ onRefresh }: Props) {
       setPatientSearch('');
       setDoctorSearch('');
       onRefresh();
-      // 충돌(false)이면 성공, 충돌(true)이면 이미 번째 createAppointment에서 던져진 에러가 catch됨
     } catch (e: any) {
-      if (e.message?.includes('충돌')) {
+      if (e.message?.includes('conflict') || e.message?.includes('Conflict')) {
         setConflict(true);
         setErrorMsg(e.message);
       } else {
-        setErrorMsg(e.message || '예약 실패');
+        setErrorMsg(e.message || 'Booking failed');
       }
     }
   };
@@ -57,28 +53,26 @@ export function AppointmentList({ onRefresh }: Props) {
       await updateStatus(id, status);
       onRefresh();
     } catch (e: any) {
-      setErrorMsg(e.message || '상태 변경 실패');
+      setErrorMsg(e.message || 'Status update failed');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('이 예약을 삭제하시겠습니까?')) {
+    if (confirm('Delete this appointment?')) {
       try {
         await deleteAppointment(id);
         onRefresh();
       } catch (e: any) {
-        setErrorMsg(e.message || '삭제 실패');
+        setErrorMsg(e.message || 'Delete failed');
       }
     }
   };
 
-  // 날짜/시간순 정렬
   const sorted = [...appointments].sort((a, b) => {
     if (a.appt_date !== b.appt_date) return a.appt_date.localeCompare(b.appt_date);
     return a.appt_time.localeCompare(b.appt_time);
   });
 
-  // 상태별 색상
   const statusColors: Record<string, string> = {
     pending: 'bg-yellow-50 border-yellow-200',
     confirmed: 'bg-blue-50 border-blue-200',
@@ -89,8 +83,8 @@ export function AppointmentList({ onRefresh }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">예약 관리</h2>
-          <p className="text-sm text-gray-500">진료 예약 등록 및 상태 관리</p>
+          <h2 className="text-xl font-bold text-gray-900">Appointment Management</h2>
+          <p className="text-sm text-gray-500">Book and manage appointments</p>
         </div>
         <button
           onClick={() => setShowAdd(true)}
@@ -99,7 +93,7 @@ export function AppointmentList({ onRefresh }: Props) {
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          예약 추가
+          Book Appointment
         </button>
       </div>
 
@@ -120,9 +114,9 @@ export function AppointmentList({ onRefresh }: Props) {
           <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <p className="text-gray-500">예약 내역이 없습니다</p>
+          <p className="text-gray-500">No appointments yet</p>
           <button onClick={() => setShowAdd(true)} className="mt-3 text-primary text-sm underline">
-            첫 예약을 등록해보세요
+            Book your first appointment
           </button>
         </div>
       )}
@@ -142,7 +136,7 @@ export function AppointmentList({ onRefresh }: Props) {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{apt.patient_name}</p>
-                    <p className="text-sm text-gray-500">{apt.patient_age}세 / {apt.patient_gender === 'male' ? '남성' : apt.patient_gender === 'female' ? '여성' : '기타'}</p>
+                    <p className="text-sm text-gray-500">{apt.patient_age}yrs / {apt.patient_gender === 'male' ? 'Male' : apt.patient_gender === 'female' ? 'Female' : 'Other'}</p>
                   </div>
                   <div className="w-px h-8 bg-gray-300" />
                   <div>
@@ -157,7 +151,7 @@ export function AppointmentList({ onRefresh }: Props) {
                       onClick={() => handleStatusChange(apt.id, 'confirmed')}
                       className="px-3 py-1 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition"
                     >
-                      확정
+                      Confirm
                     </button>
                   )}
                   {apt.status === 'confirmed' && (
@@ -165,13 +159,13 @@ export function AppointmentList({ onRefresh }: Props) {
                       onClick={() => handleStatusChange(apt.id, 'completed')}
                       className="px-3 py-1 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 transition"
                     >
-                      완료
+                      Complete
                     </button>
                   )}
                   <button
                     onClick={() => handleDelete(apt.id)}
                     className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
-                    title="삭제"
+                    title="Delete"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -184,19 +178,17 @@ export function AppointmentList({ onRefresh }: Props) {
         </div>
       )}
 
-      {/* 예약 추가 모달 */}
-      <Modal isOpen={showAdd} onClose={() => { setShowAdd(false); setConflict(false); setErrorMsg(''); }} title="예약 등록">
+      <Modal isOpen={showAdd} onClose={() => { setShowAdd(false); setConflict(false); setErrorMsg(''); }} title="Book Appointment">
         <div className="space-y-4">
-          {/* 환자 선택 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">환자 *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Patient *</label>
             <div className="relative">
               <input
                 type="text"
                 value={patientSearch}
                 onChange={(e) => setPatientSearch(e.target.value)}
                 className="w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                placeholder="환자 이름 검색..."
+                placeholder="Search patient name..."
               />
               {patientSearch && filteredPatients.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto z-10">
@@ -210,7 +202,7 @@ export function AppointmentList({ onRefresh }: Props) {
                       }}
                       className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 border-b last:border-0 ${form.patient_id === p.id ? 'bg-primary/10 text-primary' : 'text-gray-700'}`}
                     >
-                      {p.name} ({p.age}세)
+                      {p.name} ({p.age}yrs)
                     </button>
                   ))}
                 </div>
@@ -218,21 +210,20 @@ export function AppointmentList({ onRefresh }: Props) {
             </div>
             {form.patient_id && (
               <p className="mt-1 text-sm text-primary font-medium">
-                선택: {patients.find((p) => p.id === form.patient_id)?.name}
+                Selected: {patients.find((p) => p.id === form.patient_id)?.name}
               </p>
             )}
           </div>
 
-          {/* 의사 선택 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">의사 *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Doctor *</label>
             <div className="relative">
               <input
                 type="text"
                 value={doctorSearch}
                 onChange={(e) => setDoctorSearch(e.target.value)}
                 className="w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                placeholder="의사 이름 또는 전문 분야 검색..."
+                placeholder="Search doctor name or specialty..."
               />
               {doctorSearch && filteredDoctors.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto z-10">
@@ -254,15 +245,14 @@ export function AppointmentList({ onRefresh }: Props) {
             </div>
             {form.doctor_id && (
               <p className="mt-1 text-sm text-primary font-medium">
-                선택: {doctors.find((d) => d.id === form.doctor_id)?.name} ({doctors.find((d) => d.id === form.doctor_id)?.specialization})
+                Selected: {doctors.find((d) => d.id === form.doctor_id)?.name} ({doctors.find((d) => d.id === form.doctor_id)?.specialization})
               </p>
             )}
           </div>
 
-          {/* 날짜/시간 */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">날짜 *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
               <input
                 type="date"
                 value={form.appt_date}
@@ -272,7 +262,7 @@ export function AppointmentList({ onRefresh }: Props) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">시간 *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Time *</label>
               <input
                 type="time"
                 value={form.appt_time}
@@ -287,13 +277,13 @@ export function AppointmentList({ onRefresh }: Props) {
               onClick={() => { setShowAdd(false); setConflict(false); setErrorMsg(''); }}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
             >
-              취소
+              Cancel
             </button>
             <button
               onClick={handleAdd}
               className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium"
             >
-              예약하기
+              Book
             </button>
           </div>
         </div>
