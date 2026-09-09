@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: hms-prototype
+    env: docker
+    plan: free
+    dockerfile: Dockerfile
+    autoDeploy: true
+    healthCheckPath: /
+
+# Optional: Add environment variables if needed
+# envVars:
+#   VITE_API_URL: https://api.example.com

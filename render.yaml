@@ -1,0 +1,26 @@
+services:
+  # 단일 서비스: Express 가 API + 빌드된 프론트엔드를 함께 서빙
+  - type: web
+    name: hms-app
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      # 기존에 프로비저닝된 htmg-db (Postgres 16, oregon) 의 연결 문자열을 여기에 붙여넣거나
+      # Render 대시보드에서 htmg-db 의 Connection String 으로 설정하세요.
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+
+# 참고: htmg-db 는 이미 Render 프로젝트(nemo)에 존재하므로 이 블루프린트에서 생성하지 않습니다.
+# databases:
+#   - name: htmg-db
+#     databaseName: htmg
+#     plan: free
+#     region: oregon
