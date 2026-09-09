@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from './hooks';
-import { LoginPage, RegisterPage } from './pages/auth';
+import { LandingPage } from './pages/landing';
 import { Dashboard } from './pages/dashboard';
 import { PatientList } from './pages/patients';
 import { DoctorList } from './pages/doctors';
@@ -12,7 +12,6 @@ import { Layout } from './components/layout';
 export default function App() {
   const { user, loading } = useAuth();
   const [view, setView] = useState<string>('dashboard');
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
   if (loading) {
     return (
@@ -26,22 +25,7 @@ export default function App() {
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-bg-base">
-        <div className="bg-bg-panel border-b border-border-subtle">
-          <div className="max-w-5xl mx-auto px-8 py-4">
-            <h1 className="font-semibold text-text-primary">HMS — Hospital Management System</h1>
-          </div>
-        </div>
-        <div className="flex items-center justify-center p-4">
-          {authMode === 'login' ? (
-            <LoginPage onSwitchToRegister={() => setAuthMode('register')} />
-          ) : (
-            <RegisterPage onSwitchToLogin={() => setAuthMode('login')} />
-          )}
-        </div>
-      </div>
-    );
+    return <LandingPage />;
   }
 
   return (
