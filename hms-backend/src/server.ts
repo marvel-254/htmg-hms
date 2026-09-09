@@ -69,6 +69,8 @@ async function start(): Promise<void> {
     console.log(`HMS server running on port ${PORT}`);
   });
 
+  startKeepAlive();
+
   // 우아한 종료 (graceful shutdown)
   const shutdown = async (signal: string) => {
     console.log(`${signal} received, shutting down...`);
@@ -82,6 +84,35 @@ async function start(): Promise<void> {
 
   process.on('SIGTERM', () => shutdown('SIGTERM'));
   process.on('SIGINT', () => shutdown('SIGINT'));
+}
+
+//
+// Keep-alive: Render free tier spins the service down after ~15 min of no
+// inbound traffic. When running on Render (RENDER_EXTERNAL_URL is set), the
+// app pings its own /api/health endpoint periodically to stay awake.
+//
+const KEEP_ALIVE_INTERVAL_MS = Number(process.env.KEEP_ALIVE_INTERVAL_MS || 10 * 60 * 1000); // 10 min
+
+function startKeepAlive(): void {
+  const baseUrl = process.env.RENDER_EXTERNAL_URL;
+  if (!baseUrl) {
+    console.log('Keep-alive disabled (RENDER_EXTERNAL_URL not set)');
+    return;
+  }
+
+  const ping = async (): Promise<void> => {
+    try {
+      const res = await fetch(`${baseUrl}/api/health`);
+      console.log(`Keep-alive ping: ${res.status}`);
+    } catch (err) {
+      console.error('Keep-alive ping failed:', err);
+    }
+  };
+
+  // First ping after one interval (the deploy health check already generated traffic)
+  const timer = setInterval(ping, KEEP_ALIVE_INTERVAL_MS);
+  timer.unref(); // never block process exit
+  console.log(`Keep-alive enabled: pinging ${baseUrl}/api/health every ${KEEP_ALIVE_INTERVAL_MS / 60000} min`);
 }
 
 // tsx 로 직접 실행될 때만 시작 (테스트 import 시 시작 방지)
