@@ -5,9 +5,9 @@ services:
     publishDir: hms-frontend/dist
     envVars:
       - key: VITE_API_URL
-        value: https://hms-api.onrender.com/api
+        value: https://hms-api-s1na.onrender.com/api
 
-  - type: web
+  - type: web_service
     name: hms-api
     runtime: node
     buildCommand: cd hms-backend && npm ci && npm run build
@@ -17,7 +17,7 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: CORS_ORIGIN
-        value: https://hms-frontend.onrender.com
+        value: https://hms-frontend-ehbo.onrender.com
       - key: JWT_SECRET
         generateValue: true
       - key: NODE_ENV
