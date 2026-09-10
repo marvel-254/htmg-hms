@@ -1,15 +1,23 @@
 services:
+  - type: static_site
+    name: hms-frontend
+    buildCommand: cd hms-frontend && npm ci && npm run build
+    publishDir: hms-frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://hms-api.onrender.com/api
+
   - type: web
-    name: hms-app
-    runtime: docker
-    plan: free
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    autoDeploy: true
+    name: hms-api
+    runtime: node
+    buildCommand: cd hms-backend && npm ci && npm run build
+    startCommand: cd hms-backend && npm start
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
         sync: false
+      - key: CORS_ORIGIN
+        value: https://hms-frontend.onrender.com
       - key: JWT_SECRET
         generateValue: true
       - key: NODE_ENV

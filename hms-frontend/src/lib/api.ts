@@ -1,6 +1,6 @@
 // API client with auth header injection
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 interface RequestOptions extends Omit<RequestInit, 'headers'> {
   headers?: Record<string, string>;
