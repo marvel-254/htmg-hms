@@ -97,6 +97,24 @@ export function LandingPage() {
                     Sign In
                   </button>
                 </div>
+                <div className="mt-8 p-4 bg-panel/50 rounded-xl border border-border-subtle">
+                  <p className="text-xs font-medium text-text-muted uppercase tracking-wider mb-3">Demo Accounts</p>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-text-secondary">Admin</span>
+                      <code className="text-brand-accent bg-brand/10 px-2 py-0.5 rounded text-xs">admin@hospital.com</code>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-secondary">Receptionist</span>
+                      <code className="text-brand-accent bg-brand/10 px-2 py-0.5 rounded text-xs">receptionist@hospital.com</code>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-secondary">Doctor</span>
+                      <code className="text-brand-accent bg-brand/10 px-2 py-0.5 rounded text-xs">doctor@hospital.com</code>
+                    </div>
+                    <p className="text-xs text-text-muted mt-1">Password for all: <code className="text-success-alt bg-success-alt/10 px-2 py-0.5 rounded">demo1234</code></p>
+                  </div>
+                </div>
               </motion.div>
             </div>
             

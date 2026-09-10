@@ -7,8 +7,28 @@ import appointmentRoutes from './routes/appointments.js';
 import dashboardRoutes from './routes/dashboard.js';
 import { initializeDb, closeDb } from './db/index.js';
 
+// Lazy DB initialization for serverless (Netlify Functions)
+let dbReady = false;
+async function ensureDb(): Promise<void> {
+  if (!dbReady) {
+    await initializeDb();
+    dbReady = true;
+  }
+}
+
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Ensure DB is initialized before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await ensureDb();
+    next();
+  } catch (err) {
+    console.error('Database initialization failed:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
 
 // CORS - allow the frontend origin in production, open in dev
 app.use(cors({
@@ -52,8 +72,6 @@ async function start(): Promise<void> {
     console.log(`HMS API running on port ${PORT}`);
   });
 
-  startKeepAlive();
-
   // Graceful shutdown
   const shutdown = async (signal: string) => {
     console.log(`${signal} received, shutting down...`);
@@ -68,31 +86,10 @@ async function start(): Promise<void> {
   process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
-// Keep-alive for Render free tier
-const KEEP_ALIVE_INTERVAL_MS = Number(process.env.KEEP_ALIVE_INTERVAL_MS || 10 * 60 * 1000);
-
-function startKeepAlive(): void {
-  const baseUrl = process.env.RENDER_EXTERNAL_URL;
-  if (!baseUrl) {
-    console.log('Keep-alive disabled (RENDER_EXTERNAL_URL not set)');
-    return;
-  }
-
-  const ping = async (): Promise<void> => {
-    try {
-      const res = await fetch(`${baseUrl}/api/health`);
-      console.log(`Keep-alive ping: ${res.status}`);
-    } catch (err) {
-      console.error('Keep-alive ping failed:', err);
-    }
-  };
-
-  const timer = setInterval(ping, KEEP_ALIVE_INTERVAL_MS);
-  timer.unref();
-  console.log(`Keep-alive enabled: pinging ${baseUrl}/api/health every ${KEEP_ALIVE_INTERVAL_MS / 60000} min`);
-}
-
-if (process.env.NODE_ENV !== 'test') {
+// Only start the server if this file is run directly (not imported as a module)
+// This allows the app to be imported by serverless-http for Netlify Functions
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
   start();
 }
 

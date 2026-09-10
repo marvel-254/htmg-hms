@@ -2,10 +2,14 @@
   "name": "hms-backend",
   "version": "1.0.0",
   "type": "module",
+  "allowScripts": ["mime", "uuid"],
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsc --watch & node --watch dist/server.js",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "build:all": "npm run build",
+    "start": "node dist/server.js",
+    "seed": "npx tsx src/db/seed.ts",
+    "seed:neon": "npx tsx src/db/seed-neon.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -13,6 +17,7 @@
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.0",
+    "serverless-http": "^4.0.0",
     "uuid": "^10.0.0",
     "zod": "^3.23.8"
   },
@@ -24,7 +29,6 @@
     "@types/node": "^22.20.2",
     "@types/pg": "^8.11.10",
     "@types/uuid": "^10.0.0",
-    "tsx": "^4.19.1",
     "typescript": "^5.5.4"
   }
 }

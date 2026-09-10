@@ -1,0 +1,5 @@
+{
+  "version": 2,
+  "buildCommand": "cd hms-frontend && npm run build",
+  "outputDirectory": "hms-frontend/dist"
+}

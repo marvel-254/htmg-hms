@@ -4,6 +4,7 @@ node_modules/
 # Builds
 hms-frontend/dist/
 hms-backend/dist/
+hms-backend/api/dist/
 
 # Env files
 .env
@@ -29,5 +30,9 @@ npm-debug-log*
 .claude/
 .ori/
 
+# Netlify CLI state
+.netlify/
+
 # OS
 Thumbs.db
+.vercel

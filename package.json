@@ -1,0 +1,22 @@
+{
+  "name": "htmg",
+  "version": "1.0.0",
+  "private": true,
+  "allowScripts": [
+    "mime",
+    "uuid"
+  ],
+  "scripts": {
+    "build:backend": "cd hms-backend && npm ci --ignore-scripts && npm run build",
+    "build:frontend": "cd hms-frontend && npm ci --ignore-scripts && npm run build",
+    "build:all": "npm run build:backend && npm run build:frontend",
+    "seed": "cd hms-backend && npx tsx src/db/seed.ts",
+    "seed:neon": "cd hms-backend && npx tsx src/db/seed-neon.ts",
+    "migrate": "cd hms-backend && npx tsx src/db/migrate-neon.ts",
+    "setup:neon": "cd hms-backend && npx tsx src/db/migrate-neon.ts && npx tsx src/db/seed-neon.ts",
+    "vercel:build": "npm run build:all"
+  },
+  "dependencies": {
+    "neonctl": "^4.14.6"
+  }
+}
