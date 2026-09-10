@@ -1,11 +1,11 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { query } from '../db/index.js';
 import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// 통계 조회 (인증 필요, 모든 역할)
-router.get('/stats', authMiddleware, async (req, res) => {
+// Get stats (all roles)
+router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
   try {
     const result = await query(`
       SELECT
@@ -16,7 +16,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
         (SELECT COUNT(*) FROM appointments WHERE status = 'confirmed') AS "confirmedAppointments",
         (SELECT COUNT(*) FROM appointments WHERE status = 'completed') AS "completedAppointments"
     `);
-    // pg returns BIGINT counts as strings — convert to numbers
+    // pg returns BIGINT counts as strings - convert to numbers
     const stats = {
       totalPatients: Number(result.rows[0].totalPatients),
       totalDoctors: Number(result.rows[0].totalDoctors),
@@ -28,12 +28,12 @@ router.get('/stats', authMiddleware, async (req, res) => {
     res.json({ stats });
   } catch (error) {
     console.error('Stats error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 최근 활동 (인증 필요)
-router.get('/recent-activity', authMiddleware, async (req, res) => {
+// Get recent activity
+router.get('/recent-activity', authMiddleware, async (req: Request, res: Response) => {
   try {
     const recentPatients = await query(
       'SELECT id, name, age, gender, created_at FROM patients ORDER BY created_at DESC LIMIT 5'
@@ -48,7 +48,7 @@ router.get('/recent-activity', authMiddleware, async (req, res) => {
     res.json({ recentPatients: recentPatients.rows, recentAppointments: recentAppointments.rows });
   } catch (error) {
     console.error('Recent activity error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

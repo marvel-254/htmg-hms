@@ -1,12 +1,12 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { query } from '../db/index.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// 환자 목록 조회 (로그인 사용자 모두 가능)
-router.get('/', authMiddleware, async (req, res) => {
+// Get all patients
+router.get('/', authMiddleware, async (req: Request, res: Response) => {
   try {
     const result = await query(
       'SELECT id, name, age, gender, contact, address, condition, created_by, created_at FROM patients ORDER BY created_at DESC'
@@ -14,36 +14,35 @@ router.get('/', authMiddleware, async (req, res) => {
     res.json({ patients: result.rows });
   } catch (error) {
     console.error('Get patients error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 환자 검색
-router.get('/search', authMiddleware, async (req, res) => {
+// Search patients
+router.get('/search', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { q } = req.query;
     if (!q || typeof q !== 'string') {
-      res.status(400).json({ error: '검색어를 입력하세요' });
+      res.status(400).json({ error: 'Search query required' });
       return;
     }
 
     const result = await query(
-      `SELECT id, name, age, gender, contact, address, condition, created_by, created_at
-       FROM patients
+      `SELECT id, name, age, gender, contact, address, condition, created_by, created_at 
+       FROM patients 
        WHERE name ILIKE $1 OR contact ILIKE $1
        ORDER BY name`,
       [`%${q}%`]
     );
-
     res.json({ patients: result.rows });
   } catch (error) {
     console.error('Search patients error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 환자 상세 조회
-router.get('/:id', authMiddleware, async (req, res) => {
+// Get patient by ID
+router.get('/:id', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const result = await query(
@@ -52,24 +51,24 @@ router.get('/:id', authMiddleware, async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      res.status(404).json({ error: '환자를 찾을 수 없습니다' });
+      res.status(404).json({ error: 'Patient not found' });
       return;
     }
 
     res.json({ patient: result.rows[0] });
   } catch (error) {
     console.error('Get patient error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 환자 생성 (접수자 이상)
-router.post('/', authMiddleware, requireRole('admin', 'receptionist'), async (req, res) => {
+// Create patient
+router.post('/', authMiddleware, requireRole('admin', 'receptionist'), async (req: Request, res: Response) => {
   try {
     const { name, age, gender, contact, address, condition } = req.body;
 
     if (!name || !age || !gender) {
-      res.status(400).json({ error: '필수 정보가 누락되었습니다' });
+      res.status(400).json({ error: 'Missing required fields' });
       return;
     }
 
@@ -83,15 +82,15 @@ router.post('/', authMiddleware, requireRole('admin', 'receptionist'), async (re
       [id, name, age, gender, contact || null, address || null, condition || null, created_by]
     );
 
-    res.status(201).json({ message: '환자가 등록되었습니다', patient: result.rows[0] });
+    res.status(201).json({ message: 'Patient registered', patient: result.rows[0] });
   } catch (error) {
     console.error('Create patient error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 환자 수정 (관리자, 접수자)
-router.put('/:id', authMiddleware, requireRole('admin', 'receptionist'), async (req, res) => {
+// Update patient
+router.put('/:id', authMiddleware, requireRole('admin', 'receptionist'), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, age, gender, contact, address, condition } = req.body;
@@ -110,33 +109,33 @@ router.put('/:id', authMiddleware, requireRole('admin', 'receptionist'), async (
     );
 
     if (result.rowCount === 0) {
-      res.status(404).json({ error: '환자를 찾을 수 없습니다' });
+      res.status(404).json({ error: 'Patient not found' });
       return;
     }
 
-    res.json({ message: '환자 정보가 수정되었습니다', patient: result.rows[0] });
+    res.json({ message: 'Patient updated', patient: result.rows[0] });
   } catch (error) {
     console.error('Update patient error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 환자 삭제 (관리자만)
-router.delete('/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+// Delete patient
+router.delete('/:id', authMiddleware, requireRole('admin'), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
     const result = await query('DELETE FROM patients WHERE id = $1', [id]);
 
     if (result.rowCount === 0) {
-      res.status(404).json({ error: '환자를 찾을 수 없습니다' });
+      res.status(404).json({ error: 'Patient not found' });
       return;
     }
 
-    res.json({ message: '환자가 삭제되었습니다' });
+    res.json({ message: 'Patient deleted' });
   } catch (error) {
     console.error('Delete patient error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

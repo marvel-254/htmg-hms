@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { query } from '../db/index.js';
@@ -7,8 +7,8 @@ import { registerSchema, loginSchema } from '../config/schemas.js';
 
 const router = express.Router();
 
-// 회원가입
-router.post('/register', async (req, res) => {
+// Register
+router.post('/register', async (req: Request, res: Response) => {
   try {
     const result = registerSchema.safeParse(req.body);
     if (!result.success) {
@@ -18,18 +18,18 @@ router.post('/register', async (req, res) => {
 
     const { email, password, name, role } = result.data;
 
-    // 이메일 중복 확인
+    // Check for existing email
     const existing = await query('SELECT id FROM users WHERE email = $1', [email]);
     if (existing.rows.length > 0) {
-      res.status(400).json({ error: '이미 등록된 이메일입니다' });
+      res.status(400).json({ error: 'Email already registered' });
       return;
     }
 
-    // 비밀번호 해시
+    // Hash password
     const password_hash = await bcrypt.hash(password, 10);
     const id = uuidv4();
 
-    // 사용자 생성
+    // Create user
     await query(
       'INSERT INTO users (id, email, password_hash, name, role) VALUES ($1, $2, $3, $4, $5)',
       [id, email, password_hash, name, role]
@@ -38,23 +38,18 @@ router.post('/register', async (req, res) => {
     const token = generateToken(id);
 
     res.status(201).json({
-      message: '회원가입 성공',
-      user: {
-        id,
-        email,
-        name,
-        role
-      },
+      message: 'Registration successful',
+      user: { id, email, name, role },
       token
     });
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 로그인
-router.post('/login', async (req, res) => {
+// Login
+router.post('/login', async (req: Request, res: Response) => {
   try {
     const result = loginSchema.safeParse(req.body);
     if (!result.success) {
@@ -71,20 +66,20 @@ router.post('/login', async (req, res) => {
     const user = userResult.rows[0];
 
     if (!user) {
-      res.status(401).json({ error: '이메일 또는 비밀번호가 올바르지 않습니다' });
+      res.status(401).json({ error: 'Invalid email or password' });
       return;
     }
 
     const isValid = await bcrypt.compare(password, user.password_hash);
     if (!isValid) {
-      res.status(401).json({ error: '이메일 또는 비밀번호가 올바르지 않습니다' });
+      res.status(401).json({ error: 'Invalid email or password' });
       return;
     }
 
     const token = generateToken(user.id);
 
     res.json({
-      message: '로그인 성공',
+      message: 'Login successful',
       user: {
         id: user.id,
         email: user.email,
@@ -96,22 +91,22 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 현재 사용자 정보
-router.get('/me', authMiddleware, (req, res) => {
+// Get current user
+router.get('/me', authMiddleware, (req: Request, res: Response) => {
   res.json({ user: req.user });
 });
 
-// 로그아웃 (클라이언트에서 토큰 삭제)
-router.post('/logout', authMiddleware, (req, res) => {
-  res.json({ message: '로그아웃 완료' });
+// Logout
+router.post('/logout', authMiddleware, (req: Request, res: Response) => {
+  res.json({ message: 'Logged out' });
 });
 
-// 모든 사용자 목록 (관리자만)
-router.get('/users', authMiddleware, async (req, res) => {
+// Get all users (admin only)
+router.get('/users', authMiddleware, async (req: Request, res: Response) => {
   try {
     const users = await query(
       'SELECT id, email, name, role, created_at FROM users ORDER BY created_at DESC'
@@ -119,18 +114,18 @@ router.get('/users', authMiddleware, async (req, res) => {
     res.json({ users: users.rows });
   } catch (error) {
     console.error('Get users error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 사용자 역할 변경 (관리자만)
-router.put('/users/:id/role', authMiddleware, async (req, res) => {
+// Update user role (admin only)
+router.put('/users/:id/role', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
 
     if (!['admin', 'receptionist', 'doctor'].includes(role)) {
-      res.status(400).json({ error: '유효하지 않은 역할입니다' });
+      res.status(400).json({ error: 'Invalid role' });
       return;
     }
 
@@ -140,14 +135,14 @@ router.put('/users/:id/role', authMiddleware, async (req, res) => {
     );
 
     if (result.rowCount === 0) {
-      res.status(404).json({ error: '사용자를 찾을 수 없습니다' });
+      res.status(404).json({ error: 'User not found' });
       return;
     }
 
-    res.json({ message: '역할이 변경되었습니다', user: result.rows[0] });
+    res.json({ message: 'Role updated', user: result.rows[0] });
   } catch (error) {
     console.error('Update role error:', error);
-    res.status(500).json({ error: '서버 오류가 발생했습니다' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
